@@ -27,8 +27,13 @@ func New() *echo.Echo {
 	e.PUT("/provinces/:id", controllers.PutProvincesByIDController)
 	//end provinces
 	//start city
+	e.GET("/city/:id", controllers.GetCityByProvincesIdController)
+	e.GET("/get-city/:id", controllers.GetCityByIdController)
+	e.POST("/city", controllers.StoreCityController)
+	e.DELETE("/delete-city/:id", controllers.DeleteCityController)
+	e.PUT("/update-city/:id", controllers.PutCityByIDController)
 
-	
+	// end city
 
 	//start users
 	e.GET("/users", controllers.GetUserControllers)

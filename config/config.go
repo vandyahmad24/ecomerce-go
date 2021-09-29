@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"go-ecommerce/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -23,12 +24,18 @@ func InitDB() {
 		panic(e)
 	}
 
-	InitMigrate()
+	// InitMigrate()
 }
 
 func InitMigrate() {
-	// DB.AutoMigrate(&models.Provinces{}, &models.City{} ,
-	// 				&models.Users{}, &models.Categories{}, &models.Products{},
-	// 				&models.PaymentMethods{}, &models.Transactions{}, &models.TransactionDetails{},
-	// 				&models.Carts{})
+	DB.AutoMigrate(
+		&models.Provinces{},
+		&models.City{},
+		&models.Users{},
+		&models.Categories{},
+		&models.Products{},
+		&models.PaymentMethods{},
+		&models.Transactions{},
+		&models.TransactionDetails{},
+		&models.Carts{})
 }

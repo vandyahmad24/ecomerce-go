@@ -43,7 +43,7 @@ func StoreProvinces(provinces *models.Provinces) (interface{}, error) {
 func PutProvincesByID(provinces *models.Provinces, id int, name string) (interface{}, error) {
 
 	// config.DB.First(&provinces, id).Update({
-	e := config.DB.Where("id=?", id).First(&provinces).Error
+	e := config.DB.Preload("Provinces").Where("id=?", id).First(&provinces).Error
 	if e != nil {
 		return nil, e
 	}
