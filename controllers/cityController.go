@@ -47,7 +47,7 @@ func StoreCityController(c echo.Context) error {
 	}
 	_, err := database.GetProvincesById(&models.Provinces{}, int(u.ProvincesId))
 	if err != nil {
-		response := helpers.ResponseFormater(http.StatusBadRequest, "error", err.Error(), nil)
+		response := helpers.ResponseFormater(http.StatusBadRequest, "error", "provinces not found", nil)
 		return echo.NewHTTPError(http.StatusBadRequest, response)
 	}
 	kota := models.City{
@@ -100,7 +100,7 @@ func PutCityByIDController(c echo.Context) error {
 	// cek apakah prov id ada
 	_, err := database.GetProvincesById(&models.Provinces{}, int(u.ProvincesId))
 	if err != nil {
-		response := helpers.ResponseFormater(http.StatusBadRequest, "error", err.Error(), nil)
+		response := helpers.ResponseFormater(http.StatusBadRequest, "error", "provinces not found", nil)
 		return echo.NewHTTPError(http.StatusBadRequest, response)
 	}
 

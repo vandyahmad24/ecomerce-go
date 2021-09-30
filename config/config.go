@@ -24,7 +24,7 @@ func InitDB() {
 		panic(e)
 	}
 
-	// InitMigrate()
+	InitMigrate()
 }
 
 func InitMigrate() {

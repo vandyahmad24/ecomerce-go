@@ -6,7 +6,6 @@ import (
 )
 
 var provinces []models.Provinces
-var getProvince models.Provinces
 
 func GetProvinces() (interface{}, error) {
 	if e := config.DB.Find(&provinces).Error; e != nil {
@@ -15,12 +14,12 @@ func GetProvinces() (interface{}, error) {
 	return provinces, nil
 }
 
-func GetProvincesById(provinces *models.Provinces, id int) (interface{}, error) {
-	if e := config.DB.First(&provinces, id).Error; e != nil {
+func GetProvincesById(province *models.Provinces, id int) (interface{}, error) {
+	if e := config.DB.First(&province, id).Error; e != nil {
 		return nil, e
 	}
 
-	return provinces, nil
+	return province, nil
 }
 
 func DeleteProvincesById(id int) (interface{}, error) {
@@ -43,7 +42,7 @@ func StoreProvinces(provinces *models.Provinces) (interface{}, error) {
 func PutProvincesByID(provinces *models.Provinces, id int, name string) (interface{}, error) {
 
 	// config.DB.First(&provinces, id).Update({
-	e := config.DB.Preload("Provinces").Where("id=?", id).First(&provinces).Error
+	e := config.DB.Where("id=?", id).First(&provinces).Error
 	if e != nil {
 		return nil, e
 	}

@@ -58,3 +58,13 @@ func PutCityById(city *models.City, id int, name string, prov_id uint) (interfac
 	config.DB.Save(&city)
 	return city, nil
 }
+
+func AccessGetCityById(city *models.City, id int) (*models.City, error) {
+	// err := repo.db.Preload("Categories").Where("id = ?", id).First(&product).Error
+	//
+	if e := config.DB.Preload("Provinces").First(&city, id).Error; e != nil {
+		return nil, e
+	}
+
+	return city, nil
+}
