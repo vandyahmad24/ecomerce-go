@@ -29,7 +29,7 @@ func GetCityByProvincesIdController(c echo.Context) error {
 
 func GetCityByIdController(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	city, e := database.GetCityById(&models.City{}, id)
+	city, e := database.GetCityById(id)
 	if e != nil {
 		response := helpers.ResponseFormater(http.StatusBadRequest, "error", e.Error(), nil)
 		return echo.NewHTTPError(http.StatusBadRequest, response)
@@ -67,7 +67,7 @@ func StoreCityController(c echo.Context) error {
 func DeleteCityController(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	// cek apakah id nya ada
-	_, e := database.GetCityById(&models.City{}, id)
+	_, e := database.GetCityById(id)
 	if e != nil {
 		response := helpers.ResponseFormater(http.StatusBadRequest, "error", e.Error(), nil)
 		return echo.NewHTTPError(http.StatusBadRequest, response)
@@ -91,7 +91,7 @@ func PutCityByIDController(c echo.Context) error {
 	}
 
 	// cek apakah IDnya ada
-	_, errorCity := database.GetCityById(&models.City{}, id)
+	_, errorCity := database.GetCityById(id)
 	if errorCity != nil {
 		response := helpers.ResponseFormater(http.StatusBadRequest, "error", errorCity.Error(), nil)
 		return echo.NewHTTPError(http.StatusBadRequest, response)

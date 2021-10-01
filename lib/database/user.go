@@ -1,7 +1,10 @@
 package database
 
 import (
+	"errors"
+	"fmt"
 	"go-ecommerce/config"
+	"go-ecommerce/lib/utils"
 	"go-ecommerce/middlewares"
 	"go-ecommerce/models"
 
@@ -25,16 +28,19 @@ func StoreUser(user *models.Users) (interface{}, error) {
 
 }
 
-func FindUserByEmail(user *models.Users, email string) (interface{}, error) {
-	e := config.DB.Where("email=?", email).First(&users).Error
+func FindUserByEmail(email string) (interface{}, error) {
+	var user models.UserResponse
+	e := config.DB.Table("users").Select("users.id, users.name, users.email,users.name, users.provinces_id, provinces.name as provinces_name, users.city_id, cities.name as city_name, users.zip_code, users.address, users.phone_number, users.store_status, users.otp_code, users.is_active, users.is_admin, users.token ").Joins("join provinces on provinces.id = users.provinces_id").Joins("join cities on cities.id = users.city_id").Where("users.email = ?", email).First(&user).Error
 	if e != nil {
 		return nil, e
 	}
 	return user, nil
 }
 
-func FindUserByPhone(user *models.Users, phone string) (interface{}, error) {
-	e := config.DB.Where("phone_number=?", phone).First(&users).Error
+func FindUserByPhone(phone string) (interface{}, error) {
+	var user models.UserResponse
+	e := config.DB.Table("users").Select("users.id, users.name, users.email,users.name, users.provinces_id, provinces.name as provinces_name, users.city_id, cities.name as city_name, users.zip_code, users.address, users.phone_number, users.store_status, users.otp_code, users.is_active, users.is_admin, users.token ").Joins("join provinces on provinces.id = users.provinces_id").Joins("join cities on cities.id = users.city_id").Where("users.phone_number = ?", phone).First(&user).Error
+
 	if e != nil {
 		return nil, e
 	}
@@ -42,10 +48,13 @@ func FindUserByPhone(user *models.Users, phone string) (interface{}, error) {
 }
 
 func FindUserById(userId int) (interface{}, error) {
-	var user models.Users
-	if e := config.DB.Find(&user, userId).Error; e != nil {
+	var user models.UserResponse
+	e := config.DB.Table("users").Select("users.id, users.name, users.email,users.name, users.provinces_id, provinces.name as provinces_name, users.city_id, cities.name as city_name, users.zip_code, users.address, users.phone_number, users.store_status, users.otp_code, users.is_active, users.is_admin, users.token ").Joins("join provinces on provinces.id = users.provinces_id").Joins("join cities on cities.id = users.city_id").Where("users.id = ?", userId).First(&user).Error
+
+	if e != nil {
 		return nil, e
 	}
+
 	return user, nil
 }
 
@@ -60,8 +69,8 @@ func LoginUser(email string, hasPass string) (interface{}, error) {
 	if errPass != nil {
 		return nil, errPass
 	}
-
-	user.Token, err = middlewares.CreateToken(int(user.ID))
+	id := int(user.ID)
+	user.Token, err = middlewares.CreateToken(id, user.IsAdmin, user.IsActive)
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +80,55 @@ func LoginUser(email string, hasPass string) (interface{}, error) {
 	}
 
 	// jika findEmail kosong maka
+
+	return user, nil
+
+}
+
+// re create otp
+func ReCreateOTP(id int, otp, text string) (interface{}, error) {
+	var user models.Users
+
+	e := config.DB.Where("id=?", id).First(&user).Error
+	if e != nil {
+		return nil, e
+	}
+	// fmt.Println(e)
+	user.OtpCode = otp
+	fmt.Println(user.PhoneNumber)
+	// send to otp
+	wa, e := utils.SendWa(string(user.PhoneNumber), text)
+	if e != nil {
+		fmt.Println("Error")
+		fmt.Println(e)
+	}
+	fmt.Println("WA")
+	fmt.Println(wa)
+
+	config.DB.Save(&user)
+	return user, nil
+}
+
+func VerifOTP(id int, requestotp string) (interface{}, error) {
+	var user models.Users
+	var err error
+	e := config.DB.Where("id=?", id).First(&user).Error
+	if e != nil {
+		return nil, e
+	}
+
+	if user.OtpCode != requestotp {
+		return nil, errors.New("OTP code doesn't same")
+	}
+	// jika sama maka otp dihapus
+	user.OtpCode = ""
+	user.IsActive = true
+	user.Token, err = middlewares.CreateToken(id, user.IsAdmin, user.IsActive)
+	if err != nil {
+		return nil, err
+	}
+
+	config.DB.Save(&user)
 
 	return user, nil
 

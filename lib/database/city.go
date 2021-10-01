@@ -2,34 +2,37 @@ package database
 
 import (
 	"errors"
+	"fmt"
 	"go-ecommerce/config"
 	"go-ecommerce/models"
-	"strconv"
 )
 
 var city []models.City
 
 func GetCityByProvincesId(prov_id int) (interface{}, error) {
-	e := config.DB.Preload("Provinces").Where("provinces_id=?", prov_id).Find(&city).Error
 
-	jumlah := len(city)
-	if jumlah <= 0 {
-		return nil, errors.New("not found city with provinces id " + strconv.Itoa(prov_id))
-	}
+	var result []models.CityResponse
+	var count int64
+	e := config.DB.Table("cities").Select("cities.id as id,cities.name as city_name, cities.provinces_id, provinces.name as provinces_name").Joins("join provinces on provinces.id = cities.provinces_id").Where("cities.provinces_id = ?", prov_id).Find(&result).Count(&count).Error
 	if e != nil {
 		return nil, e
 	}
-	return city, nil
+	if count <= 0 {
+		return nil, errors.New("record not found")
+	}
+
+	fmt.Println(count)
+	return result, nil
 }
 
-func GetCityById(city *models.City, id int) (interface{}, error) {
-	// err := repo.db.Preload("Categories").Where("id = ?", id).First(&product).Error
-	//
-	if e := config.DB.Preload("Provinces").First(&city, id).Error; e != nil {
+func GetCityById(id int) (interface{}, error) {
+	var result models.CityResponse
+	e := config.DB.Table("cities").Select("cities.id as id,cities.name as city_name, cities.provinces_id, provinces.name as provinces_name").Joins("join provinces on provinces.id = cities.provinces_id").Where("cities.id = ?", id).Find(&result).Error
+	if e != nil {
 		return nil, e
 	}
 
-	return city, nil
+	return result, nil
 }
 
 func Storecity(city *models.City) (interface{}, error) {
