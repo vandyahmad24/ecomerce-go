@@ -43,10 +43,10 @@ func StoreCategory(category *models.Categories) (interface{}, error) {
 
 }
 
-func GetCategoryById(id int) (interface{}, error) {
+func GetCategoryById(category *models.Categories, id int) (interface{}, error) {
 	if e := config.DB.First(&category, id).Error; e != nil {
 		return nil, e
 	}
 
-	return city, nil
+	return category, nil
 }

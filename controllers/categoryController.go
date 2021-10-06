@@ -60,13 +60,13 @@ func InsertCategory(c echo.Context) error {
 
 func GetCategoryByID(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	category, e := database.GetCategoryById(id)
+	category, e := database.GetCategoryById(&models.Categories{}, id)
 	if e != nil {
 		response := helpers.ResponseFormater(http.StatusBadRequest, "error", e.Error(), nil)
 		return echo.NewHTTPError(http.StatusBadRequest, response)
 	}
 
-	response := helpers.ResponseFormater(http.StatusOK, "success", "success get city", category)
+	response := helpers.ResponseFormater(http.StatusOK, "success", "success get category", category)
 	return c.JSON(http.StatusOK, response)
 }
 

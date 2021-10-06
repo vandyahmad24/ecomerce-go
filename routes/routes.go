@@ -71,7 +71,19 @@ func New() *echo.Echo {
 	// end categori
 
 	// produk
-	r.GET("/produk/all", controllers.GetAllCategoryActive)
+	isActive.POST("/produk/create", controllers.CreateProdukController)
+	// get produk by id
+	isActive.GET("/produk/:id", controllers.GetProdukByIdController)
+	// get produk by category id
+	isActive.GET("/produk/category/:id", controllers.GetProdukByCategoryController)
+	// produk ke shopping cart
+	isActive.POST("/add-cart/:product_id", controllers.AddCartByProdukProdukController)
+	// list produk dari cart
+	isActive.GET("/carts", controllers.GetListCartController)
+	// delete produk dari cart
+	isActive.DELETE("/carts/:cart_id", controllers.DeleteCartController)
+	// CART CHECKOUT
+	isActive.POST("/checkout", controllers.CheckoutController)
 
 	return e
 }
